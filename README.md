@@ -14,46 +14,45 @@ docker build -t depth-anything-tensorrt .
 docker run --gpus all -it --rm -v local_dir:/container_dir depth-anything-tensorrt:latest
 ```
 
-Run depth_anything.bin and modify main.cpp and recompile
 
-## Video example
-
+## Export onnx to engine
 ```c
-g++ run_video.cpp depth_anything/trt_module.cpp -I/usr/local/cuda-12.3/include/ -I/usr/include/opencv4/  -lopencv_core -lopencv_highgui -lopencv_imgproc -lopencv_imgcodecs -l opencv_videoio -lnvinfer -lrt  -lnvonnxparser -L/usr/local/cuda/lib64 -lcudart -o run_video.bin
+cd depthanything 
+trtexec --onnx=depth_anything_vitb14.onnx --saveEngine=depth_anything_vitb14.engine
 ```
 
+## Build software 
 
-## Exampel output
+Remove `imshow` from main.cpp to run without graphical interface. 
 
-Example output, nvidia 3080 ti 
+
 ```c
-./run_video.bin 
-Deserializing Engine.
-Inference time: 65 milliseconds
-Inference time: 11 milliseconds
-Inference time: 11 milliseconds
-Inference time: 12 milliseconds
-Inference time: 10 milliseconds
-Inference time: 11 milliseconds
-Inference time: 11 milliseconds
-Inference time: 11 milliseconds
-Inference time: 11 milliseconds
-Inference time: 11 milliseconds
-Inference time: 11 milliseconds
-Inference time: 11 milliseconds
-Inference time: 11 milliseconds
-Inference time: 11 milliseconds
-Inference time: 11 milliseconds
-Inference time: 12 milliseconds
-Inference time: 10 milliseconds
-Inference time: 10 milliseconds
-...
+mkdir build
+cd build
+cmake ..
+make
 ```
 
-### Input file
-![image](https://github.com/martenwikman/depth-anything-tensorrt-docker/assets/9117097/c71007ca-4089-45e0-80ab-033c8af19d50)
+## Run 
 
-### Output file
-![lol2](https://github.com/martenwikman/depth-anything-tensorrt-docker/assets/9117097/ec962301-e92b-45af-8225-2b42e478acc3)
+
+```c
+depth-anything-tensorrt-simplified ../depth_anything_vitb14.engine /container_dir/DJI_0434.mp4 
+```
+
+### Output
+
+```c
+Time of per frame: 47ms
+Time of per frame: 47ms
+Time of per frame: 47ms
+Time of per frame: 49ms
+Time of per frame: 47ms
+Time of per frame: 48ms
+Time of per frame: 46ms
+Time of per frame: 47ms
+Time of per frame: 47ms
+Time of per frame: 47ms
+``````
 
 
